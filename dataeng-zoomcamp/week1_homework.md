@@ -28,101 +28,6 @@ After that, run
 Apply the plan and copy the output (after running `apply`) to the form
 
 
-# output for terraform init ::
-
-Initializing the backend...
-
-Initializing provider plugins...
-- Reusing previous version of hashicorp/google from the dependency lock file
-- Using previously-installed hashicorp/google v4.6.0
-
-Terraform has been successfully initialized!
-
-You may now begin working with Terraform. Try running "terraform plan" to see
-any changes that are required for your infrastructure. All Terraform commands
-should now work.
-
-If you ever set or change modules or backend configuration for Terraform,
-rerun this command to reinitialize your working directory. If you forget, other
-commands will detect it and remind you to do so if necessary.
-
-
-# output for terraform plan ::
-
-var.project
-  Your GCP Project ID
-
-  Enter a value: data-terraform-338612
-
-
-Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
-  + create
-
-Terraform will perform the following actions:
-
-  # google_bigquery_dataset.dataset will be created
-  + resource "google_bigquery_dataset" "dataset" {
-      + creation_time              = (known after apply)
-      + dataset_id                 = "trips_data_all"
-      + delete_contents_on_destroy = false
-      + etag                       = (known after apply)
-      + id                         = (known after apply)
-      + last_modified_time         = (known after apply)
-      + location                   = "europe-west6"
-      + project                    = "data-terraform-338612"
-      + self_link                  = (known after apply)
-
-      + access {
-          + domain         = (known after apply)
-          + group_by_email = (known after apply)
-          + role           = (known after apply)
-          + special_group  = (known after apply)
-          + user_by_email  = (known after apply)
-
-          + view {
-              + dataset_id = (known after apply)
-              + project_id = (known after apply)
-              + table_id   = (known after apply)
-            }
-        }
-    }
-
-  # google_storage_bucket.data-lake-bucket will be created
-  + resource "google_storage_bucket" "data-lake-bucket" {
-      + force_destroy               = true
-      + id                          = (known after apply)
-      + location                    = "EUROPE-WEST6"
-      + name                        = "dtc_data_lake_data-terraform-338612"
-      + project                     = (known after apply)
-      + self_link                   = (known after apply)
-      + storage_class               = "STANDARD"
-      + uniform_bucket_level_access = true
-      + url                         = (known after apply)
-
-      + lifecycle_rule {
-          + action {
-              + type = "Delete"
-            }
-
-          + condition {
-              + age                   = 30
-              + matches_storage_class = []
-              + with_state            = (known after apply)
-            }
-        }
-
-      + versioning {
-          + enabled = true
-        }
-    }
-
-Plan: 2 to add, 0 to change, 0 to destroy.
-
-───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
-
-
 # output for terraform apply ::
 
 var.project
@@ -136,7 +41,7 @@ Terraform used the selected providers to generate the following execution plan. 
 
 Terraform will perform the following actions:
 
-  # google_bigquery_dataset.dataset will be created
+   google_bigquery_dataset.dataset will be created
   + resource "google_bigquery_dataset" "dataset" {
       + creation_time              = (known after apply)
       + dataset_id                 = "trips_data_all"
@@ -163,7 +68,7 @@ Terraform will perform the following actions:
         }
     }
 
-  # google_storage_bucket.data-lake-bucket will be created
+   google_storage_bucket.data-lake-bucket will be created
   + resource "google_storage_bucket" "data-lake-bucket" {
       + force_destroy               = true
       + id                          = (known after apply)
@@ -258,7 +163,19 @@ GROUP by month
 having date_trunc('month', tpep_pickup_datetime) = '2021-01-01'
 order by month;
 
-1140.44
+largest tip in January --> 1140.44
+
+
+select
+date_trunc('month', tpep_pickup_datetime) as month, 
+max(tip_amount), min(tip_amount)
+from ny_taxi_data
+GROUP by month
+--having date_trunc('month', tpep_pickup_datetime) = '2021-01-01'
+order by max(tip_amount) desc;
+
+month with largest tip --> "2021-01-01"
+
 
 ## Question 5. Most popular destination
 
@@ -276,7 +193,7 @@ cast(t1.tpep_pickup_datetime as date) = '2021-01-14'
 group by t2."Zone"
 order by "count" desc;
 
-"Upper East Side South"
+popular destination --> "Upper East Side South"
 
 ## Question 6. 
 
@@ -298,7 +215,7 @@ join zones t3 on t1."DOLocationID" = t3."LocationID"
 group by t2."Zone", t3."Zone"
 order by max_total desc;
 
-"Lenox Hill East/Upper East Side North"	
+pickup-dropoff pair with the largest average price --> "Lenox Hill East/Upper East Side North"	
 
 
 ## Submitting the solutions
