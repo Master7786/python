@@ -155,6 +155,7 @@ Use the pick up time for your calculations.
 
 (note: it's not a typo, it's "tip", not "trip")
 
+```
 select
 date_trunc('month', tpep_pickup_datetime) as month, 
 max(tip_amount), min(tip_amount)
@@ -162,6 +163,7 @@ from ny_taxi_data
 GROUP by month
 having date_trunc('month', tpep_pickup_datetime) = '2021-01-01'
 order by month;
+```
 
 largest tip in January --> 1140.44
 
