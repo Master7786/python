@@ -30,6 +30,7 @@ Apply the plan and copy the output (after running `apply`) to the form
 
 # output for terraform apply ::
 
+```
 var.project
   Your GCP Project ID
 
@@ -111,7 +112,7 @@ google_bigquery_dataset.dataset: Creation complete after 4s [id=projects/data-te
 google_storage_bucket.data-lake-bucket: Creation complete after 5s [id=dtc_data_lake_data-terraform-338612]
 
 Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
-
+```
 
 ## Prepare Postgres 
 
@@ -137,10 +138,12 @@ Download this data and put it to Postgres
 
 How many taxi trips were there on January 15?
 
+```
 select cast(tpep_pickup_datetime as date) as date,  count(1) 
 from ny_taxi_data
 GROUP by date
 having cast(tpep_pickup_datetime as date) = '2021-01-15';
+```
 
 53024
 
@@ -155,6 +158,7 @@ Use the pick up time for your calculations.
 
 (note: it's not a typo, it's "tip", not "trip")
 
+```
 select
 date_trunc('month', tpep_pickup_datetime) as month, 
 max(tip_amount), min(tip_amount)
@@ -162,10 +166,11 @@ from ny_taxi_data
 GROUP by month
 having date_trunc('month', tpep_pickup_datetime) = '2021-01-01'
 order by month;
+```
 
 largest tip in January --> 1140.44
 
-
+```
 select
 date_trunc('month', tpep_pickup_datetime) as month, 
 max(tip_amount), min(tip_amount)
@@ -173,6 +178,7 @@ from ny_taxi_data
 GROUP by month
 --having date_trunc('month', tpep_pickup_datetime) = '2021-01-01'
 order by max(tip_amount) desc;
+```
 
 month with largest tip --> "2021-01-01"
 
@@ -186,12 +192,14 @@ Use the pick up time for your calculations.
 
 Enter the zone name (not id). If the zone name is unknown (missing), write "Unknown" 
 
+```
 select COALESCE(t2."Zone",'Unknown'), count(t1."index") as "count" 
 from ny_taxi_data t1, zones t2 
 where t1."DOLocationID" = t2."LocationID" and t1."PULocationID" = 43 and 
 cast(t1.tpep_pickup_datetime as date) = '2021-01-14'
 group by t2."Zone"
 order by "count" desc;
+```
 
 popular destination --> "Upper East Side South"
 
@@ -208,12 +216,14 @@ For example:
 
 If any of the zone names are unknown (missing), write "Unknown". For example, "Unknown / Clinton East". 
 
+```
 select concat(COALESCE(t2."Zone",'Unknown'), '/' ,COALESCE(t3."Zone",'Unknown')),
 max(t1."total_amount") as max_total from ny_taxi_data t1
 join zones t2 on t1."PULocationID" = t2."LocationID"
 join zones t3 on t1."DOLocationID" = t3."LocationID"
 group by t2."Zone", t3."Zone"
 order by max_total desc;
+```
 
 pickup-dropoff pair with the largest average price --> "Lenox Hill East/Upper East Side North"	
 
