@@ -17,6 +17,10 @@ SELECT count(1)
 FROM taxi-rides-ny.nytaxi.fhv_external
 WHERE DATE(pickup_datetime) BETWEEN '2019-01-01' AND '2019-12-31';
 
+SELECT count(distinct(dispatching_base_num))
+FROM taxi-rides-ny.nytaxi.fhv_external
+WHERE DATE(pickup_datetime) BETWEEN '2019-01-01' AND '2019-03-31';
+
 
 CREATE OR REPLACE TABLE trips_data_all.fhv_partitoned
 PARTITION BY
