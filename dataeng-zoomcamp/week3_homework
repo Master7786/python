@@ -1,0 +1,24 @@
+CREATE OR REPLACE EXTERNAL TABLE `trips_data_all.yellow_external`
+OPTIONS (
+  format = 'PARQUET',
+  uris = ['gs://dtc_data_lake_data-terraform-338612/raw/yellow_tripdata/*.parquet']
+);
+
+
+CREATE OR REPLACE EXTERNAL TABLE `trips_data_all.fhv_external`
+OPTIONS (
+  format = 'PARQUET',
+  uris = ['gs://dtc_data_lake_data-terraform-338612/raw/fhv_tripdata/*.parquet']
+);
+
+
+
+SELECT count(1)
+FROM taxi-rides-ny.nytaxi.fhv_external
+WHERE DATE(pickup_datetime) BETWEEN '2019-01-01' AND '2019-12-31';
+
+
+CREATE OR REPLACE TABLE trips_data_all.fhv_partitoned
+PARTITION BY
+  DATE(pickup_datetime) CLUSTER BY dispatching_base_num AS
+SELECT * FROM trips_data_all.fhv_external;
